@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DigiSpinz</title>
+<style>
+:root{
+  --bg:#0b0e17; --panel:#141827; --panel2:#1b2136; --border:#2a3150;
+  --text:#eef1fb; --sub:#8b93b8; --accent:#7c5cff; --accent2:#26d0ce;
+  --gold:#ffb020; --red:#ff5d6c; --green:#3ddc84;
+  --radius:14px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; min-height:100%; background:radial-gradient(1200px 800px at 50% -10%, #1c2340 0%, var(--bg) 60%);
+  color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  padding:24px 16px 60px;
+}
+.wrap{max-width:640px; margin:0 auto;}
+h1.logo{
+  font-size:2.2rem; text-align:center; margin:8px 0 2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:1px;
+}
+.tag{text-align:center; color:var(--sub); font-size:.85rem; margin-bottom:22px;}
+.card{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:20px; margin-bottom:16px;
+}
+input{
+  width:100%; padding:12px 14px; margin:6px 0; border-radius:10px; border:1px solid var(--border);
+  background:var(--panel2); color:var(--text); font-size:1rem;
+}
+input:focus{outline:2px solid var(--accent);}
+button{
+  width:100%; padding:13px; border:none; border-radius:10px; font-size:1rem; font-weight:600;
+  cursor:pointer; margin-top:8px; transition:transform .08s ease;
+}
+button:active{transform:scale(.98);}
+.btn-primary{background:linear-gradient(90deg,var(--accent),#5a3fe0); color:#fff;}
+.btn-secondary{background:transparent; color:var(--sub); border:1px solid var(--border);}
+.btn-primary:disabled{background:#333a55; color:#777; cursor:not-allowed;}
+.err{color:var(--red); font-size:.85rem; min-height:1.2em; margin-top:4px;}
+.hide{display:none !important;}
+.row{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.hello{font-size:1rem; color:var(--sub);}
+.hello b{color:var(--text);}
+.logout{width:auto; padding:8px 14px; font-size:.85rem;}
+.numDisplay{
+  font-size:3rem; text-align:center; font-weight:800; letter-spacing:2px; margin:10px 0;
+  font-variant-numeric:tabular-nums;
+}
+.tierBadge{
+  display:block; text-align:center; font-weight:700; padding:6px 0; border-radius:8px; margin-bottom:14px;
+  text-transform:uppercase; letter-spacing:2px; font-size:.8rem;
+}
+.tier-Standard{background:#2a3150; color:var(--sub);}
+.tier-Common{background:#20406b; color:#8fd0ff;}
+.tier-Rare{background:#3a2a6b; color:#c9a8ff;}
+.tier-Exceptional{background:#6b3a2a; color:var(--gold);}
+.tier-Singular{background:linear-gradient(90deg,#ff5d6c,#ffb020,#3ddc84,#26d0ce); color:#111; font-weight:800;}
+.ep{text-align:center; color:var(--sub); margin-bottom:14px; font-size:.9rem;}
+.ep b{color:var(--accent2); font-size:1.1rem;}
+.badges{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:6px;}
+.badge{
+  background:var(--panel2); border:1px solid var(--border); padding:6px 10px; border-radius:20px; font-size:.78rem;
+}
+.section-title{font-size:.75rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--sub); margin:0 0 12px;}
+.lb-row{display:flex; align-items:center; padding:9px 0; border-bottom:1px solid var(--border); font-size:.9rem;}
+.lb-row:last-child{border-bottom:none;}
+.lb-rank{width:28px; color:var(--sub); font-weight:700;}
+.lb-name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.lb-num{color:var(--sub); font-variant-numeric:tabular-nums; margin-right:10px;}
+.lb-ep{color:var(--accent2); font-weight:700; width:56px; text-align:right;}
+.lb-me{background:rgba(124,92,255,.12); border-radius:8px; padding-left:6px; margin:0 -6px;}
+.muted{color:var(--sub); font-size:.85rem; text-align:center;}
+.toggle{text-align:center; color:var(--sub); font-size:.85rem; margin-top:10px;}
+.toggle a{color:var(--accent2); cursor:pointer; text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="logo">DIGISPINZ</h1>
+  <div class="tag">One roll a day. 0&ndash;9,999,999. Let the number tell you what it is.</div>
+
+  <!-- AUTH -->
+  <div id="authCard" class="card">
+    <div id="loginForm">
+      <div class="section-title">Sign in</div>
+      <input id="loginEmail" type="email" placeholder="Email" autocomplete="email">
+      <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="btn-primary" id="loginBtn">Sign in</button>
+      <div class="err" id="loginErr"></div>
+      <div class="toggle">No account? <a id="showSignup">Create one</a></div>
+    </div>
+    <div id="signupForm" class="hide">
+      <div class="section-title">Create account</div>
+      <input id="signupName" type="text" placeholder="Display name" maxlength="20">
+      <input id="signupEmail" type="email" placeholder="Email" autocomplete="email">
+      <input id="signupPass" type="password" placeholder="Password (6+ characters)" autocomplete="new-password">
+      <button class="btn-primary" id="signupBtn">Create account</button>
+      <div class="err" id="signupErr"></div>
+      <div class="toggle">Have an account? <a id="showLogin">Sign in</a></div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="gameArea" class="hide">
+    <div class="row">
+      <div class="hello">Welcome, <b id="whoami"></b></div>
+      <button class="btn-secondary logout" id="logoutBtn">Log out</button>
+    </div>
+
+    <div class="card" id="rollCard">
+      <div id="rollPrompt">
+        <button class="btn-primary" id="rollBtn">🎲 Roll today's number</button>
+      </div>
+      <div id="resultBox" class="hide">
+        <div class="numDisplay" id="numOut"></div>
+        <div class="tierBadge" id="tierOut"></div>
+        <div class="ep">Entropy Points: <b id="epOut"></b></div>
+        <div class="badges" id="badgeOut"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🏆 Today's Leaderboard</div>
+      <div id="lbList"><div class="muted">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://cdn.jsdelivr.net/npm/firebase@10.12.2/app/+esm";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  onAuthStateChanged, signOut
+} from "https://cdn.jsdelivr.net/npm/firebase@10.12.2/auth/+esm";
+import {
+  getFirestore, doc, setDoc, getDoc, collection, query, where, orderBy, limit,
+  onSnapshot, serverTimestamp
+} from "https://cdn.jsdelivr.net/npm/firebase@10.12.2/firestore/+esm";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBeKnvXWyP3haRSwdGZ-QFOgR867kDYhBU",
+  authDomain: "digispinz.firebaseapp.com",
+  projectId: "digispinz",
+  storageBucket: "digispinz.firebasestorage.app",
+  messagingSenderId: "139248229293",
+  appId: "1:139248229293:web:dc7e0aa387784dcfd3df24",
+  measurementId: "G-034B79VLQW"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ---------- PATTERN / RARITY ENGINE ---------- */
+function isPrime(n){
+  if(n < 2) return false;
+  if(n % 2 === 0) return n === 2;
+  for(let i=3;i*i<=n;i+=2) if(n % i === 0) return false;
+  return true;
+}
+function isPerfectSquare(n){ const r = Math.round(Math.sqrt(n)); return r*r === n; }
+function isFibonacci(n){
+  const a = 5*n*n + 4, b = 5*n*n - 4;
+  return isPerfectSquare(a) || (b >= 0 && isPerfectSquare(b));
+}
+function digitSum(n){ return String(n).split('').reduce((s,d)=>s+ +d,0); }
+function isHarshad(n){ if(n===0) return false; const s = digitSum(n); return s>0 && n % s === 0; }
+function isPalindrome(str){ return str === str.split('').reverse().join(''); }
+function longestRepeatRun(str){
+  let best=1, cur=1;
+  for(let i=1;i<str.length;i++){ cur = str[i]===str[i-1] ? cur+1 : 1; best = Math.max(best,cur); }
+  return best;
+}
+function hasConsecutiveRun(str, dir){ // dir: 1 ascending, -1 descending
+  let best=1, cur=1;
+  for(let i=1;i<str.length;i++){
+    const d = +str[i] - +str[i-1];
+    cur = d === dir ? cur+1 : 1;
+    best = Math.max(best,cur);
+  }
+  return best;
+}
+function isAlternating(str){
+  if(str.length < 4) return false;
+  for(let i=2;i<str.length;i++) if(str[i] !== str[i-2]) return false;
+  return str[0] !== str[1];
+}
+const CULTURAL = new Set([42,69,420,666,777,1337,1984,1999,2000,2020,2077,8008135,9000,1000000,123456,654321,111111,7777777]);
+
+function analyze(n){
+  const str = String(n);
+  const badges = [];
+  const add = (name, pts) => badges.push({name, pts});
+
+  if(isPrime(n)) add('Prime Number', 15);
+  if(isFibonacci(n)) add('Fibonacci Sequence', 25);
+  if(n>0 && isPerfectSquare(n)) add('Perfect Square', 20);
+  if(isHarshad(n)) add('Harshad Number', 10);
+  if(str.length >= 3 && isPalindrome(str)) add('Palindrome', 30);
+
+  const rep = longestRepeatRun(str);
+  if(rep >= 7) add('All Same Digit', 100);
+  else if(rep >= 5) add('Digit Storm (5+ repeat)', 45);
+  else if(rep >= 3) add('Repeating Digits', 20);
+
+  const asc = hasConsecutiveRun(str, 1);
+  const desc = hasConsecutiveRun(str, -1);
+  if(asc >= 5 || desc >= 5) add('Long Consecutive Run', 40);
+  else if(asc >= 3 || desc >= 3) add('Consecutive Digits', 22);
+
+  if(isAlternating(str)) add('Alternating Pattern', 15);
+  if(n >= 1000 && n <= 2099) add('Historical Year', 10);
+  if(CULTURAL.has(n)) add('Internet-Famous Number', 20);
+  if(digitSum(n) === 0) add('Zero Digit Sum', 5);
+
+  const ep = badges.reduce((s,b)=>s+b.pts, 0);
+  let tier = 'Standard';
+  if(ep >= 100) tier = 'Singular';
+  else if(ep >= 70) tier = 'Exceptional';
+  else if(ep >= 40) tier = 'Rare';
+  else if(ep >= 20) tier = 'Common';
+
+  return { number:n, badges, ep, tier };
+}
+
+/* ---------- UI HELPERS ---------- */
+const $ = id => document.getElementById(id);
+const todayStr = () => new Date().toISOString().slice(0,10);
+
+$('showSignup').onclick = () => { $('loginForm').classList.add('hide'); $('signupForm').classList.remove('hide'); };
+$('showLogin').onclick = () => { $('signupForm').classList.add('hide'); $('loginForm').classList.remove('hide'); };
+
+$('signupBtn').onclick = async () => {
+  $('signupErr').textContent = '';
+  const name = $('signupName').value.trim();
+  const email = $('signupEmail').value.trim();
+  const pass = $('signupPass').value;
+  if(!name){ $('signupErr').textContent = 'Pick a display name.'; return; }
+  if(pass.length < 6){ $('signupErr').textContent = 'Password needs 6+ characters.'; return; }
+  try{
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await setDoc(doc(db,'users',cred.user.uid), { username:name, email, createdAt: serverTimestamp() });
+  }catch(e){ $('signupErr').textContent = friendlyErr(e); }
+};
+
+$('loginBtn').onclick = async () => {
+  $('loginErr').textContent = '';
+  try{
+    await signInWithEmailAndPassword(auth, $('loginEmail').value.trim(), $('loginPass').value);
+  }catch(e){ $('loginErr').textContent = friendlyErr(e); }
+};
+
+$('logoutBtn').onclick = () => signOut(auth);
+
+function friendlyErr(e){
+  const c = e.code || '';
+  if(c.includes('email-already-in-use')) return 'That email already has an account.';
+  if(c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found')) return 'Incorrect email or password.';
+  if(c.includes('invalid-email')) return 'That email looks invalid.';
+  if(c.includes('weak-password')) return 'Password needs 6+ characters.';
+  return 'Something went wrong. Try again.';
+}
+
+let currentUser = null, currentUsername = '';
+let lbUnsub = null;
+
+onAuthStateChanged(auth, async (user) => {
+  if(user){
+    currentUser = user;
+    const udoc = await getDoc(doc(db,'users',user.uid));
+    currentUsername = udoc.exists() ? udoc.data().username : (user.email || 'Player');
+    $('authCard').classList.add('hide');
+    $('gameArea').classList.remove('hide');
+    $('whoami').textContent = currentUsername;
+    await checkTodayRoll();
+    startLeaderboard();
+  } else {
+    currentUser = null;
+    $('gameArea').classList.add('hide');
+    $('authCard').classList.remove('hide');
+    if(lbUnsub) lbUnsub();
+  }
+});
+
+async function checkTodayRoll(){
+  const rollId = currentUser.uid + '_' + todayStr();
+  const snap = await getDoc(doc(db,'rolls',rollId));
+  if(snap.exists()){
+    showResult(snap.data());
+    $('rollBtn').disabled = true;
+    $('rollBtn').textContent = 'Already rolled today ✓';
+  } else {
+    $('rollPrompt').classList.remove('hide');
+    $('resultBox').classList.add('hide');
+    $('rollBtn').disabled = false;
+    $('rollBtn').textContent = '🎲 Roll today\'s number';
+  }
+}
+
+$('rollBtn').onclick = async () => {
+  $('rollBtn').disabled = true;
+  $('rollBtn').textContent = 'Rolling…';
+  const n = Math.floor(Math.random() * 10000000); // 0 - 9,999,999 (7 digits max)
+  const result = analyze(n);
+  const rollId = currentUser.uid + '_' + todayStr();
+  const payload = {
+    uid: currentUser.uid, username: currentUsername, number: n, ep: result.ep,
+    tier: result.tier, badges: result.badges.map(b=>b.name), date: todayStr(),
+    createdAt: serverTimestamp()
+  };
+  try{
+    await setDoc(doc(db,'rolls',rollId), payload);
+    showResult(payload);
+    $('rollBtn').textContent = 'Already rolled today ✓';
+  }catch(e){
+    $('rollBtn').disabled = false;
+    $('rollBtn').textContent = '🎲 Roll today\'s number';
+    alert('Roll failed — you may have already rolled today.');
+  }
+};
+
+function showResult(data){
+  $('rollPrompt').classList.add('hide');
+  $('resultBox').classList.remove('hide');
+  $('numOut').textContent = data.number.toLocaleString();
+  $('tierOut').textContent = data.tier;
+  $('tierOut').className = 'tierBadge tier-' + data.tier;
+  $('epOut').textContent = data.ep;
+  $('badgeOut').innerHTML = data.badges.length
+    ? data.badges.map(b => `<span class="badge">${b}</span>`).join('')
+    : '<span class="badge">No special traits — pure Standard roll</span>';
+}
+
+function startLeaderboard(){
+  const q = query(collection(db,'rolls'), where('date','==',todayStr()), orderBy('ep','desc'), limit(25));
+  lbUnsub = onSnapshot(q, (snap) => {
+    if(snap.empty){ $('lbList').innerHTML = '<div class="muted">No rolls yet today — be the first!</div>'; return; }
+    let html = '';
+    let rank = 0;
+    snap.forEach(d => {
+      rank++;
+      const r = d.data();
+      const mine = currentUser && r.uid === currentUser.uid;
+      html += `<div class="lb-row${mine ? ' lb-me' : ''}">
+        <div class="lb-rank">#${rank}</div>
+        <div class="lb-name">${escapeHtml(r.username)}</div>
+        <div class="lb-num">${r.number.toLocaleString()}</div>
+        <div class="lb-ep">${r.ep} EP</div>
+      </div>`;
+    });
+    $('lbList').innerHTML = html;
+  }, () => { $('lbList').innerHTML = '<div class="muted">Leaderboard unavailable right now.</div>'; });
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+</script>
+</body>
+</html>
